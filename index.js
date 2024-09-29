@@ -6,7 +6,7 @@ const { MongoClient, ServerApiVersion } = require('mongodb');
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const app = express();
-const allowedOrigins = ['https://products-chi-blue.vercel.app'];
+const allowedOrigins = ['https://products-chi-blue.vercel.app', "http://localhost:3000"];
 app.use(cors({
     origin: (origin, callback) => {
         if (!origin || allowedOrigins.indexOf(origin) !== -1) {
