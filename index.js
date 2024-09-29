@@ -2,14 +2,21 @@ const dotenv = require("dotenv");
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
+const { MongoClient, ServerApiVersion } = require('mongodb');
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const app = express();
 const allowedOrigins = ['https://products-chi-blue.vercel.app'];
 app.use(cors({
-    origin: allowedOrigins,
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     methods: ['GET', 'POST', 'PUT', 'DELETE'], 
-    credentials: true 
+    credentials: true
 }));
 
 
@@ -20,12 +27,20 @@ const JWT = process.env.JWT;
 
 app.use(express.json());
 
-mongoose.connect(MONGODB,{
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
-.then(()=>"Db connected")
-.catch((err)=>console.log(err));
+const uri = MONGODB;
+const clientOptions = { serverApi: { version: '1', strict: true, deprecationErrors: true } };
+async function run() {
+  try {
+    // Create a Mongoose client with a MongoClientOptions object to set the Stable API version
+    await mongoose.connect(uri, clientOptions);
+    await mongoose.connection.db.admin().command({ ping: 1 });
+    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+  } finally {
+    // Ensures that the client will close when you finish/error
+    await mongoose.disconnect();
+  }
+}
+run().catch(console.dir);
 
 const userSchema = new mongoose.Schema({
     email:{
