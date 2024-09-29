@@ -27,20 +27,10 @@ const JWT = process.env.JWT;
 
 app.use(express.json());
 
-const uri = MONGODB;
-const clientOptions = { serverApi: { version: '1', strict: true, deprecationErrors: true } };
-async function run() {
-  try {
-    // Create a Mongoose client with a MongoClientOptions object to set the Stable API version
-    await mongoose.connect(uri, clientOptions);
-    await mongoose.connection.db.admin().command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
-  } finally {
-    // Ensures that the client will close when you finish/error
-    await mongoose.disconnect();
-  }
-}
-run().catch(console.dir);
+mongoose.connect(MONGODB, { useNewUrlParser: true, useUnifiedTopology: true })
+    .then(() => console.log("MongoDB connected!"))
+    .catch(err => console.error("MongoDB connection error:", err));
+
 
 const userSchema = new mongoose.Schema({
     email:{
