@@ -4,15 +4,21 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-
 const app = express();
+const allowedOrigins = ['https://products-chi-blue.vercel.app'];
+app.use(cors({
+    origin: allowedOrigins,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], 
+    credentials: true 
+}));
+
+
 dotenv.config();
 const PORT = process.env.PORT;
 const MONGODB = process.env.MONGODB;
 const JWT = process.env.JWT;
 
 app.use(express.json());
-app.use(cors());
 
 mongoose.connect(MONGODB,{
     useNewUrlParser: true,
